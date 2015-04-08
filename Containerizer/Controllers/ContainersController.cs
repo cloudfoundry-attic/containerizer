@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using IronFoundry.Container;
 using Containerizer.Models;
 using System;
+using Logger;
 
 #endregion
 
@@ -27,19 +28,21 @@ namespace Containerizer.Controllers
     {
         private readonly IContainerService containerService;
         private readonly IContainerPropertyService propertyService;
+        private readonly ILogger logger;
 
 
-        public ContainersController(IContainerService containerService, IContainerPropertyService propertyService)
+        public ContainersController(IContainerService containerService, IContainerPropertyService propertyService, ILogger logger)
         {
             this.containerService = containerService;
             this.propertyService = propertyService;
+            this.logger = logger;
         }
 
         [Route("api/containers")]
         [HttpGet]
         public IReadOnlyList<string> Index()
         {
-            Console.WriteLine("Container#Index");
+            logger.Info("Container#Index");
             return containerService.GetContainers().Select(x => x.Handle).ToList();
         }
 
@@ -47,7 +50,7 @@ namespace Containerizer.Controllers
         [HttpPost]
         public CreateResponse Create(ContainerSpecApiModel spec)
         {
-            Console.WriteLine("Container#Create: {0}", spec.Handle);
+            logger.Info("Container#Create: {0}", spec.Handle);
             var containerSpec = new ContainerSpec
             {
                 Handle = spec.Handle,
@@ -61,7 +64,7 @@ namespace Containerizer.Controllers
 
             propertyService.SetProperties(container, spec.Properties);
 
-            Console.WriteLine("Container#Create: {0} => {1}", spec.Handle, container.Id);
+            logger.Info("Container#Create: {0} => {1}", spec.Handle, container.Id);
               
             return new CreateResponse
             {
@@ -73,11 +76,11 @@ namespace Containerizer.Controllers
         [HttpPost]
         public IHttpActionResult Stop(string handle)
         {
-            Console.WriteLine("Container#Stop: {0}", handle);
+            logger.Info("Container#Stop: {0}", handle);
             var container = containerService.GetContainerByHandle(handle);
             if (container != null)
             {
-                Console.WriteLine("Container#Stop: {0} => {1}", handle, container.Id);
+                logger.Info("Container#Stop: {0} => {1}", handle, container.Id);
                 container.Stop(true);
                 return Ok();
             }
@@ -89,13 +92,13 @@ namespace Containerizer.Controllers
         [HttpDelete]
         public IHttpActionResult Destroy(string handle)
         {
-            Console.WriteLine("Container#Destroy: {0}", handle);
+            logger.Info("Container#Destroy: {0}", handle);
             var container = containerService.GetContainerByHandle(handle);
             if (container != null)
             {
-                Console.WriteLine("Container#Destroy: {0} => {1}", handle, container.Id);
+                logger.Info("Container#Destroy: {0} => {1}", handle, container.Id);
                 containerService.DestroyContainer(handle);
-                Console.WriteLine("Container#Destroy (after): {0} => {1}", handle, container.Id);
+                logger.Info("Container#Destroy (after): {0} => {1}", handle, container.Id);
                 return Ok();
             }
 

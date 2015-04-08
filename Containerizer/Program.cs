@@ -19,8 +19,10 @@ namespace Containerizer
 
         static void Main(string[] args)
         {
+            var logger = DependencyResolver.logger;
+
             if (args.Length != 2) {
-                Console.WriteLine("Usage: {0} [ExternalIP] [Port]", "Containerizer.exe");
+                logger.Info("Usage: {0} [ExternalIP] [Port]", "Containerizer.exe");
                 return;
             }
 
@@ -37,17 +39,17 @@ namespace Containerizer
             DependencyResolver.ExternalIP = new ExternalIP(externalIP);
             using (WebApp.Start<Startup>("http://*:" + port + "/"))
             {         
-                Console.WriteLine("SUCCESS: started on {0} with externalIP {1}", port, externalIP);
+                logger.Info("SUCCESS: started on {0} with externalIP {1}", port, externalIP);
 
                 // Create HttpCient and make a request to api/values 
                 HttpClient client = new HttpClient();
 
                 var response = client.GetAsync("http://localhost:" + port + "/api/ping").Result;
 
-                Console.WriteLine(response);
-                Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+                logger.Info(response.ToString());
+                logger.Info(response.Content.ReadAsStringAsync().Result);
 
-                Console.WriteLine("Control-C to quit.");
+                logger.Info("Control-C to quit.");
                 ExitLatch.WaitOne();
             }
         }
