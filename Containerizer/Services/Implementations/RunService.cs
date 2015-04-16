@@ -29,6 +29,7 @@ namespace Containerizer.Services.Implementations
             {
                 var processIO = new ProcessIO(websocket);
                 var process = container.Run(processSpec, processIO);
+                websocket.SendEvent("pid", process.Id.ToString());
                 var exitCode = process.WaitForExit();
                 websocket.SendEvent("close", exitCode.ToString());
                 websocket.Close(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, "process finished");
