@@ -156,6 +156,7 @@
     <Compile Include="Controllers\ContainersController.cs" />
     <Compile Include="Controllers\FilesController.cs" />
     <Compile Include="Controllers\BulkInfoController.cs" />
+    <Compile Include="Controllers\CapacityController.cs" />
     <Compile Include="Controllers\InfoController.cs" />
     <Compile Include="Controllers\LimitsController.cs" />
     <Compile Include="Controllers\NetController.cs" />
